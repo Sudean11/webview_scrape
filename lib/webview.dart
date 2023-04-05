@@ -7,9 +7,15 @@ class WebviewClass extends StatelessWidget {
 
   final MethodChannel _channel = const MethodChannel('my_channel');
 
-  var controller = WebViewController()
+  final controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(const Color(0x00000000))
+    ..addJavaScriptChannel(
+      'Print',
+      onMessageReceived: (JavaScriptMessage message) {
+        print(message.message);
+      },
+    )
     ..setNavigationDelegate(
       NavigationDelegate(
         onProgress: (int progress) {
@@ -27,7 +33,7 @@ class WebviewClass extends StatelessWidget {
       ),
     )
     ..loadRequest(Uri.parse(
-        'https://book.olacabs.com/?pickup_name=Hebbal%2C%20Bengaluru%20Karnataka%20India&lat=13.0353557&lng=77.59878739999999&drop_lat=12.9351929&drop_lng=77.62448069999999&drop_name=Kormangala%2C%20Bengaluru%20Karnataka%20India&pickup='));
+        'https://book.olacabs.com/?pickup_name=Jayanagar%2C%20Bengaluru%20Karnataka%20India&lat=12.9307735&lng=77.5838302&drop_lat=12.9063433&drop_lng=77.5856825&drop_name=J.%20P.%20Nagar%2C%20Bengaluru%20Karnataka%20India'));
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +43,7 @@ class WebviewClass extends StatelessWidget {
       controller.runJavaScript("hello world");
     }, onPageFinished: (String url) {
       controller.runJavaScript('''
-          var cancelClicked = false;
+var cancelClicked = false;
 clickCancel = () => {
             const getCancelButton = () => {
               return document
@@ -82,8 +88,8 @@ clickAuto = () => {
               if (autoAmount) {
                 clearInterval(intervalId);
                 // autoAmount.click();
-                window.postMessage({autoAmount: autoAmount.textContent}, '*');
                 alert(autoAmount.textContent);
+                Print.postMessage(autoAmount.textContent);
               }
             }, 1000);
           };
