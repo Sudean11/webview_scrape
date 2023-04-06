@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:webview_scrape_poc/controllers/cab_data_controller.dart';
 import 'package:webview_scrape_poc/webview.dart';
+import 'package:get/get.dart';
 
 void main() {
+  Get.put(CabDataController());
   runApp(const MyApp());
 }
 
@@ -31,25 +35,14 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
+  MyHomePage({super.key});
+  final cabDataController = Get.find<CabDataController>();
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return DefaultTabController(
-      length: 2,
-      child: (Scaffold(
-          appBar: AppBar(
-            title: const Text("Car Compare"),
-            bottom: const TabBar(tabs: [
-              Tab(icon: Icon(Icons.oil_barrel)),
-              Tab(icon: Icon(Icons.car_rental)),
-            ]),
-          ),
-          body: TabBarView(children: [
-            Text("lasdf"),
-            WebviewClass(),
-          ]))),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Car Compare"),
+        ),
+        body: WebviewClass());
   }
 }
