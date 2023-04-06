@@ -36,11 +36,20 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return (Scaffold(
-      appBar: AppBar(title: const Text("Car Compare")),
-      body: WebviewClass(),
-    ));
+    return DefaultTabController(
+      length: 2,
+      child: (Scaffold(
+          appBar: AppBar(
+            title: const Text("Car Compare"),
+            bottom: const TabBar(tabs: [
+              Tab(icon: Icon(Icons.oil_barrel)),
+              Tab(icon: Icon(Icons.car_rental)),
+            ]),
+          ),
+          body: TabBarView(children: [
+            Text("lasdf"),
+            WebviewClass(),
+          ]))),
+    );
   }
-
-  // This widget is the root of your application.
 }

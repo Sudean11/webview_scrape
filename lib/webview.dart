@@ -88,7 +88,6 @@ clickAuto = () => {
               if (autoAmount) {
                 clearInterval(intervalId);
                 // autoAmount.click();
-                alert(autoAmount.textContent);
                 Print.postMessage(autoAmount.textContent);
               }
             }, 1000);
