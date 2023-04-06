@@ -50,10 +50,10 @@ class WebviewClass extends StatelessWidget {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..addJavaScriptChannel(
-        "Print",
+        "Uber",
         onMessageReceived: (JavaScriptMessage message) {
           print(message.message);
-          cabDataController.setOlaValue(message.message.toString().trim());
+          cabDataController.setUberValue(message.message.toString().trim());
         },
       )
       ..setNavigationDelegate(
@@ -72,7 +72,29 @@ class WebviewClass extends StatelessWidget {
           },
         ),
       )
-      ..loadRequest(Uri.parse("https://m.uber.com"));
+      ..loadRequest(Uri.parse(
+          "https://m.uber.com/looking?drop%5B0%5D=%7B%22latitude%22%3A13.0353557%2C%22longitude%22%3A77.59878739999999%2C%22addressLine1%22%3A%22Hebbal%22%2C%22addressLine2%22%3A%22Bengaluru%2C%20Karnataka%22%2C%22id%22%3A%22ChIJRwrYlaIXrjsRWUexKPPLPBo%22%2C%22provider%22%3A%22google_places%22%2C%22index%22%3A0%7D&pickup=%7B%22latitude%22%3A12.9180865%2C%22longitude%22%3A77.6051008%2C%22addressLine1%22%3A%22BTM%201st%20Stage%22%2C%22addressLine2%22%3A%22BTM%20Layout%2C%20Bengaluru%2C%20Karnataka%22%2C%22id%22%3A%22ChIJSzfLnwEVrjsRaXJV_yIv08o%22%2C%22provider%22%3A%22google_places%22%2C%22index%22%3A0%7D&vehicle=2007"));
+
+    uberController
+        .setNavigationDelegate(NavigationDelegate(onPageFinished: (String url) {
+      uberController.runJavaScript('''getAutoValue = () => {
+      console.log('here');
+            const getAutoValue = () => {
+              return document.querySelector("#wrapper > div._css-dqxzrQ > div > div._css-fCssPB > div._css-bOmAYR > div > span > div > div._css-hWGanL > div > ul > li._css-dRVcpk > div._css-eemxAU > div._css-jhvuGu > div._css-bIstwm > div > p");
+            };
+            let intervalId;
+            intervalId = setInterval(() => {
+              const autoValue = getAutoValue();
+              if (autoValue) {
+                clearInterval(intervalId);
+                Uber.postMessage(autoValue.textContent);
+
+              }
+            }, 1000);
+          };
+      getAutoValue();
+      ''');
+    }));
 
     controller
         .setNavigationDelegate(NavigationDelegate(onPageStarted: (String url) {
@@ -149,7 +171,18 @@ function sleepSync(ms) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Obx(() => Text(cabDataController.olaAutoValue.value)),
+          Row(
+            children: [
+              Text("Ola Auto Price: "),
+              Obx(() => Text(cabDataController.olaAutoValue.value))
+            ],
+          ),
+          Row(
+            children: [
+              Text("Uber Auto Price: "),
+              Obx(() => Text(cabDataController.uberAutoValue.value))
+            ],
+          ),
           SizedBox(
             height: 500,
             child: WebViewWidget(
