@@ -1,5 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -9,6 +9,8 @@ import 'package:webview_scrape_poc/controllers/cab_data_controller.dart';
 class WebviewClass extends StatelessWidget {
   final cabDataController = Get.find<CabDataController>();
 
+  bool showOlaWebView = false;
+  bool showUberWebView = false;
   WebviewClass({
     Key? key,
   }) : super(key: key);
@@ -168,35 +170,92 @@ function sleepSync(ms) {
       }
     });
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
+    return Scaffold(
+      body: Obx(() {
+        return SafeArea(
+          child: Column(
             children: [
-              Text("Ola Auto Price: "),
-              Obx(() => Text(cabDataController.olaAutoValue.value))
+              Visibility(
+                visible: !cabDataController.showOlaWebView.value &&
+                    !cabDataController.showUberWebView.value,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text("Ola Auto Price: "),
+                        Obx(() => Text(cabDataController.olaAutoValue.value))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text("Uber Auto Price: "),
+                        Obx(() => Text(cabDataController.uberAutoValue.value))
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Visibility(
+                visible: cabDataController.showOlaWebView.value,
+                child: SizedBox(
+                  height: 500,
+                  child: WebViewWidget(
+                    controller: controller,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: cabDataController.showUberWebView.value,
+                child: SizedBox(
+                  height: 500,
+                  child: WebViewWidget(
+                    controller: uberController,
+                  ),
+                ),
+              ),
+              Spacer(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    MaterialButton(
+                      color: Colors.black,
+                      onPressed: () {
+                        cabDataController.showHomePage();
+                      },
+                      child: const Text(
+                        "Home",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    MaterialButton(
+                      color: Colors.black,
+                      onPressed: () {
+                        cabDataController.showOlaView();
+                      },
+                      child: const Text(
+                        "Ola",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    MaterialButton(
+                      color: Colors.black,
+                      onPressed: () {
+                        cabDataController.showUberView();
+                      },
+                      child: const Text(
+                        "Uber",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
-          Row(
-            children: [
-              Text("Uber Auto Price: "),
-              Obx(() => Text(cabDataController.uberAutoValue.value))
-            ],
-          ),
-          SizedBox(
-            height: 500,
-            child: WebViewWidget(
-              controller: controller,
-            ),
-          ),
-          SizedBox(
-            height: 500,
-            child: WebViewWidget(
-              controller: uberController,
-            ),
-          )
-        ],
-      ),
+        );
+      }),
     );
   }
 }
