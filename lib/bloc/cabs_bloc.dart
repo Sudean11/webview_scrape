@@ -7,7 +7,8 @@ part 'cabs_state.dart';
 
 class CabsBloc extends Bloc<CabsEvent, CabsState> {
   CabsBloc() : super(CabsInitial()) {
-    on<CabsEvent>((event, emit) {
+    on<StartScrape>((event, emit) {
+      emit(CabScrapeInProcess());
       // TODO: implement event handler
     });
   }

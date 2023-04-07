@@ -1,22 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_scrape_poc/bloc/cabs_bloc.dart';
 
 import 'package:webview_scrape_poc/controllers/cab_data_controller.dart';
 
 class WebviewClass extends StatelessWidget {
   final cabDataController = Get.find<CabDataController>();
 
-  WebviewClass({
-    Key? key,
-  }) : super(key: key);
+  // ignore: non_constant_identifier_names
 
-  final MethodChannel _channel = const MethodChannel('my_channel');
+  CabsBloc cabsBloc = CabsBloc();
 
   @override
   Widget build(BuildContext context) {
+    cabsBloc.add(StartScrape());
     final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
@@ -161,41 +162,45 @@ function sleepSync(ms) {
 ''');
     }));
 
-    _channel.setMethodCallHandler((MethodCall call) async {
-      if (call.method == 'my_method') {
-        String autoAmount = call.arguments['autoAmount'];
-        // Do something with the autoAmount value
-      }
-    });
-
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text("Ola Auto Price: "),
-              Obx(() => Text(cabDataController.olaAutoValue.value))
-            ],
-          ),
-          Row(
-            children: [
-              Text("Uber Auto Price: "),
-              Obx(() => Text(cabDataController.uberAutoValue.value))
-            ],
-          ),
-          SizedBox(
-            height: 500,
-            child: WebViewWidget(
-              controller: controller,
+      child: BlocProvider(
+        create: (context) => CabsBloc(),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                BlocBuilder<CabsBloc, CabsState>(
+                  builder: (context, state) {
+                    if (CabsState is CabScrapeInProcess) {
+                      return Text(" state in progress");
+                    } else {
+                      return Text("Ola Auto Price: ");
+                    }
+                  },
+                ),
+                Obx(() => Text(cabDataController.olaAutoValue.value))
+              ],
             ),
-          ),
-          SizedBox(
-            height: 500,
-            child: WebViewWidget(
-              controller: uberController,
+            Row(
+              children: [
+                Text("Uber Auto Price: "),
+                Obx(() => Text(cabDataController.uberAutoValue.value))
+              ],
             ),
-          )
-        ],
+            SizedBox(
+              height: 500,
+              child: WebViewWidget(
+                controller: controller,
+              ),
+            ),
+            SizedBox(
+              height: 500,
+              child: WebViewWidget(
+                controller: uberController,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -4,3 +4,5 @@ part of 'cabs_bloc.dart';
 abstract class CabsEvent {}
 
 class StartScrape extends CabsEvent {}
+
+class SetToBloc extends CabsEvent {}

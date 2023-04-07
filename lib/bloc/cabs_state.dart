@@ -10,7 +10,7 @@ class CabsInitial extends CabsState {
 
 class CabScrapeInProcess extends CabsState {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => ["Scraping in process"];
 }
 
 class CabDataFetched extends CabsState {
