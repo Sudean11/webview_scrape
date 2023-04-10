@@ -13,7 +13,7 @@ class WebviewClass extends StatelessWidget {
 
   // ignore: non_constant_identifier_names
 
-  CabsBloc cabsBloc = CabsBloc();
+  final CabsBloc cabsBloc = CabsBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class WebviewClass extends StatelessWidget {
       ..addJavaScriptChannel(
         "Print",
         onMessageReceived: (JavaScriptMessage message) {
-          print(message.message);
           cabDataController.setOlaValue(message.message.toString().trim());
+          cabsBloc.add(OlaDataScraped(message.message.toString().trim()));
         },
       )
       ..setNavigationDelegate(
@@ -53,8 +53,8 @@ class WebviewClass extends StatelessWidget {
       ..addJavaScriptChannel(
         "Uber",
         onMessageReceived: (JavaScriptMessage message) {
-          print(message.message);
           cabDataController.setUberValue(message.message.toString().trim());
+          cabsBloc.add(UberDataScraped(message.message.toString().trim()));
         },
       )
       ..setNavigationDelegate(
@@ -164,14 +164,14 @@ function sleepSync(ms) {
 
     return SingleChildScrollView(
       child: BlocProvider(
-        create: (context) => CabsBloc(),
+        create: (context) => cabsBloc,
         child: Column(
           children: [
             Row(
               children: [
                 BlocBuilder<CabsBloc, CabsState>(
                   builder: (context, state) {
-                    if (CabsState is CabScrapeInProcess) {
+                    if (state is CabScrapeInProcess) {
                       return Text(" state in progress");
                     } else {
                       return Text("Ola Auto Price: ");
